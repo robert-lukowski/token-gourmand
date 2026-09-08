@@ -12,38 +12,31 @@ This template separates those responsibilities.
 
 ## Core workflow
 
-```text
-Developer request
-      |
-      v
-Engineering Router
-(classifies the primary need)
-      |
-      +--> NEEDS_ROUTINE_IMPLEMENTATION --> Implementer
-      |
-      +--> NEEDS_VALIDATION_OR_REVIEW ----> Reviewer
-      |
-      +--> NEEDS_CONTEXT_DISCOVERY -------> Context Scout
-                                             |
-                                             +--> routine -> Implementer
-                                             |
-                                             +--> deep reasoning
-                                                      |
-                                                      v
-                                             Reasoning Task Packet
-                                                      |
-                                                      v
-                                             High-cost reasoning model
-                                             (Astra initially)
-                                                      |
-                                                      v
-                                             Approved plan
-                                                      |
-                                                      v
-                                                  Implementer
-                                                      |
-                                                      v
-                                                   Reviewer
+```mermaid
+flowchart TD
+    A[Developer request] --> B[Engineering Router]
+    B --> C{Primary need}
+
+    C -->|Routine implementation| I[Implementer]
+    C -->|Validation or review| R[Reviewer]
+    C -->|Context discovery| S[Context Scout]
+    C -->|Deep reasoning| S
+    C -->|User input required| U[Developer decision]
+
+    S --> D{Deep reasoning required?}
+    D -->|No| I
+    D -->|Yes| P[Reasoning Task Packet]
+
+    P --> H[High-cost reasoning model<br/>Astra initially]
+    H --> AP[Approved implementation plan]
+    AP --> I
+
+    I --> R
+    R --> F{Material findings?}
+    F -->|Focused fixes| I
+    F -->|No| G[Ready for Git]
+
+    U --> B
 ```
 
 The goal is not to use a weaker model for important decisions. The goal is to make sure expensive reasoning tokens are spent only where they add the most value.
