@@ -4,6 +4,11 @@ description: Implements an already-approved technical plan with minimal scope, f
 tools: ["read", "search", "edit", "execute"]
 disable-model-invocation: true
 user-invocable: true
+handoffs:
+  - label: Review Implementation
+    agent: reviewer
+    prompt: Review the implementation above against the approved task or plan. Focus on correctness, regressions, security, unnecessary scope, and missing validation.
+    send: false
 ---
 
 # Implementer
@@ -58,6 +63,14 @@ A blocker report must contain:
 4. what decision is needed,
 5. the smallest useful context to send back to the reasoning model.
 
+When blocked, assign one next need:
+
+- `NEEDS_CONTEXT_DISCOVERY`
+- `NEEDS_DEEP_REASONING`
+- `NEEDS_USER_INPUT`
+
+Do not use escalation for routine implementation failures that can be fixed directly.
+
 ## Validation strategy
 
 Prefer progressive validation:
@@ -72,6 +85,12 @@ Avoid expensive full-suite validation when a narrower check is sufficient for th
 
 When implementation is complete, report:
 
+### Status
+Choose one:
+
+- `IMPLEMENTED`
+- `BLOCKED`
+
 ### Changed
 A concise list of meaningful changes.
 
@@ -80,6 +99,9 @@ Commands or checks actually run and their result.
 
 ### Remaining concerns
 Only unresolved concerns that are material. If none, write `None.`
+
+### Next Need
+If complete, use `NEEDS_VALIDATION_OR_REVIEW` unless review was explicitly skipped. If blocked, use the appropriate escalation need.
 
 ### Ready for Git
 State whether the diff is ready for review/commit. If Git housekeeping was explicitly requested, report the resulting commit/push status instead. Do not create additional changes merely to improve presentation.
