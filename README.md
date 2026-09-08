@@ -1,18 +1,38 @@
-# Agentic Engineering Template
+# Token Gourmand
 
 <p align="center">
-  <img src="assets/agentic-engineering-hero.svg" alt="Agentic Engineering Template — cost-aware AI agent workflow" width="100%" />
+  <img src="assets/agentic-engineering-hero.svg" alt="Token Gourmand — premium reasoning with lean execution" width="100%" />
 </p>
 
-A reusable repository template for reducing token consumption of high-cost, token-intensive AI models by preparing focused repository context, routing work by need, generating optimized reasoning prompts, and delegating routine implementation to lower-cost agents.
+**Premium reasoning. Lean execution.**
+
+Token Gourmand is a reusable repository template for improving **reasoning quality per token spent**. It reduces unnecessary consumption of high-cost, token-intensive AI models by preparing focused repository context, routing work by need, generating compact reasoning prompts, and delegating routine implementation to lower-cost agents.
 
 The first target workflow is built around **Astra** as the high-cost reasoning model, but the design is intentionally model-agnostic. Astra can be replaced by any advanced reasoning model without changing the core workflow.
+
+## The Token Gourmand Principle
+
+The idea borrows from the same value mindset as great value-focused dining: the objective is not to buy the cheapest ingredients or accept lower quality. The objective is to spend the premium budget where it actually improves the result and remove waste everywhere else.
+
+In AI engineering that means:
+
+> **Use premium reasoning where it creates premium value. Delegate everything else to the smallest capable agent.**
+
+Token Gourmand does **not** optimize for the cheapest possible model. It optimizes for the best balance of:
+
+- reasoning quality,
+- task correctness,
+- context efficiency,
+- implementation cost,
+- verification quality.
+
+The guiding metric is simple: **quality per token, not tokens alone.**
 
 ## The problem
 
 Powerful reasoning models are valuable for architecture, difficult debugging, security-sensitive decisions, and cross-component analysis. They are also expensive in context and tokens when they spend time rediscovering a repository, reading unrelated files, performing routine edits, running basic checks, or handling Git housekeeping.
 
-This template separates those responsibilities.
+Token Gourmand separates those responsibilities.
 
 ## Core workflow
 
@@ -73,6 +93,7 @@ The selected external high-cost reasoning model is intentionally not hard-coded.
 ## Design principles
 
 - **Route before spending.** Classify the task before using an expensive model.
+- **Quality before cost.** Token savings are useful only if the engineering result remains strong.
 - **Reason first, implement second.** Expensive models should primarily resolve difficult decisions, not perform repository housekeeping.
 - **Progressive context discovery.** Read only the files needed for the current task instead of loading the repository broadly.
 - **Model agnostic.** The workflow must not depend on Astra-specific behavior.
@@ -151,13 +172,14 @@ Early experimental template. The first real-world validation target is an Astra 
 
 ## What success looks like
 
-A successful use of this template should reduce unnecessary context sent to expensive reasoning models while preserving or improving implementation quality. Over time, projects can measure:
+A successful use of Token Gourmand should reduce unnecessary context sent to expensive reasoning models while preserving or improving implementation quality. Over time, projects can measure:
 
 - reasoning-model token usage per task,
 - number of files passed to the reasoning model,
 - repeated repository discovery,
 - number of reasoning-model turns required,
 - percentage of tasks completed without expensive reasoning,
-- implementation rework after handoff.
+- implementation rework after handoff,
+- quality outcomes relative to premium-model token consumption.
 
-The objective is simple: **reduce waste, not capability.**
+The objective is simple: **reduce waste, not capability. Optimize for quality per token.**
