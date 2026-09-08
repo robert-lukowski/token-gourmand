@@ -1,5 +1,9 @@
 # Agentic Engineering Template
 
+<p align="center">
+  <img src="assets/agentic-engineering-hero.svg" alt="Agentic Engineering Template — cost-aware AI agent workflow" width="100%" />
+</p>
+
 A reusable repository template for reducing token consumption of high-cost, token-intensive AI models by preparing focused repository context, routing work by need, generating optimized reasoning prompts, and delegating routine implementation to lower-cost agents.
 
 The first target workflow is built around **Astra** as the high-cost reasoning model, but the design is intentionally model-agnostic. Astra can be replaced by any advanced reasoning model without changing the core workflow.
@@ -89,6 +93,8 @@ The selected external high-cost reasoning model is intentionally not hard-coded.
   copilot-instructions.md
 .ai/
   PROJECT_CONTEXT.md
+assets/
+  agentic-engineering-hero.svg
 README.md
 ```
 
