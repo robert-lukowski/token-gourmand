@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
-  <title id="title">Agentic Engineering Template</title>
-  <desc id="desc">A cost-aware agent workflow that filters repository context before expensive reasoning and delegates routine work to lower-cost agents.</desc>
+  <title id="title">Token Gourmand</title>
+  <desc id="desc">A token-aware agent workflow that preserves premium reasoning quality while reducing waste through routing, focused repository context, and lower-cost execution.</desc>
 
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
@@ -31,8 +31,9 @@
   <circle cx="175" cy="385" r="150" fill="#7c3aed" opacity="0.08"/>
 
   <g font-family="Inter,Segoe UI,Arial,sans-serif">
-    <text x="64" y="78" fill="#f8fafc" font-size="34" font-weight="700">Agentic Engineering Template</text>
-    <text x="64" y="112" fill="#94a3b8" font-size="18">Spend expensive reasoning where it matters — not on repository housekeeping.</text>
+    <text x="64" y="76" fill="#f8fafc" font-size="38" font-weight="750">Token Gourmand</text>
+    <text x="64" y="110" fill="#cbd5e1" font-size="19" font-weight="600">Premium reasoning. Lean execution.</text>
+    <text x="408" y="110" fill="#64748b" font-size="16">Best reasoning quality per token spent.</text>
 
     <g transform="translate(64,155)">
       <rect width="212" height="98" rx="18" fill="#0f172a" stroke="#334155" stroke-width="1.5"/>
@@ -97,6 +98,6 @@
     </g>
 
     <rect x="932" y="286" width="214" height="28" rx="14" fill="#052e2b" stroke="#115e59"/>
-    <text x="1039" y="305" text-anchor="middle" fill="#99f6e4" font-size="12" font-weight="600">reduce waste, not capability</text>
+    <text x="1039" y="305" text-anchor="middle" fill="#99f6e4" font-size="12" font-weight="600">quality first · waste last</text>
   </g>
 </svg>
