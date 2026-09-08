@@ -26,7 +26,8 @@ You may inspect the repository to implement the plan, but you should not reopen 
 - update directly affected tests and documentation when needed,
 - run the narrowest relevant validation first,
 - inspect the final diff,
-- report blockers with precise evidence.
+- report blockers with precise evidence,
+- when explicitly requested, handle routine Git housekeeping such as status checks, staging, commit creation, and push after validation.
 
 ## Hard rules
 
@@ -37,6 +38,7 @@ You may inspect the repository to implement the plan, but you should not reopen 
 - Do not hide failed tests or validation.
 - Do not claim validation passed unless it was actually run successfully.
 - Do not send routine implementation back to an expensive reasoning model.
+- Do not commit or push unless the user explicitly asks for it or the approved task clearly includes Git housekeeping.
 
 ## When to stop and escalate
 
@@ -80,4 +82,4 @@ Commands or checks actually run and their result.
 Only unresolved concerns that are material. If none, write `None.`
 
 ### Ready for Git
-State whether the diff is ready for review/commit. Do not create additional changes merely to improve presentation.
+State whether the diff is ready for review/commit. If Git housekeeping was explicitly requested, report the resulting commit/push status instead. Do not create additional changes merely to improve presentation.
