@@ -6,33 +6,28 @@
 
 **Premium reasoning. Lean execution.**
 
-Token Gourmand is a reusable repository template for improving **reasoning quality per token spent**. It reduces unnecessary consumption of high-cost, token-intensive AI models by preparing focused repository context, routing work by need, generating compact reasoning prompts, and delegating routine implementation to lower-cost agents.
-
-The first target workflow is built around **Astra** as the high-cost reasoning model, but the design is intentionally model-agnostic. Astra can be replaced by any advanced reasoning model without changing the core workflow.
-
-## The Token Gourmand Principle
-
-The idea borrows from the same value mindset as great value-focused dining: the objective is not to buy the cheapest ingredients or accept lower quality. The objective is to spend the premium budget where it actually improves the result and remove waste everywhere else.
-
-In AI engineering that means:
+Token Gourmand is a model-neutral AI engineering workflow for improving reasoning quality per token spent. It routes work by need, discovers repository context progressively, delegates routine execution, and gives advanced reasoning models compact standalone decision packets instead of broad repository dumps.
 
 > **Use premium reasoning where it creates premium value. Delegate everything else to the smallest capable agent.**
 
-Token Gourmand does **not** optimize for the cheapest possible model. It optimizes for the best balance of:
+Token Gourmand does not optimize for the cheapest model. It balances reasoning quality, correctness, context efficiency, implementation cost, and verification quality.
 
-- reasoning quality,
-- task correctness,
-- context efficiency,
-- implementation cost,
-- verification quality.
+## Model-neutral architecture
 
-The guiding metric is simple: **quality per token, not tokens alone.**
+The workflow has one shared instruction layer and small adapters for tools that use different repository instruction formats:
 
-## The problem
+```text
+.ai/ shared core
+  |
+  +-- GitHub Copilot adapter: .github/copilot-instructions.md + .github/agents/
+  +-- OpenAI Codex adapter: AGENTS.md
+  +-- Claude Code adapter: CLAUDE.md
+  +-- External reasoning model: standalone reasoning packet
+```
 
-Powerful reasoning models are valuable for architecture, difficult debugging, security-sensitive decisions, and cross-component analysis. They are also expensive in context and tokens when they spend time rediscovering a repository, reading unrelated files, performing routine edits, running basic checks, or handling Git housekeeping.
+`.ai/CORE.md` is the source of truth for operating principles, the need taxonomy, context efficiency, escalation, and the separation between routine execution and advanced reasoning. `.ai/roles/` contains one neutral contract per workflow role. `.ai/PROJECT_CONTEXT.md` stores concise stable facts about the current project. `.ai/REASONING_PACKET.md` defines the portable packet used when difficult reasoning is justified.
 
-Token Gourmand separates those responsibilities.
+Adapters identify the shared files that their host should consume. They do not copy or redefine the workflow.
 
 ## Core workflow
 
@@ -40,71 +35,104 @@ Token Gourmand separates those responsibilities.
 flowchart TD
     A[Developer request] --> B[Engineering Router]
     B --> C{Primary need}
-
     C -->|Routine implementation| I[Implementer]
     C -->|Validation or review| R[Reviewer]
     C -->|Context discovery| S[Context Scout]
     C -->|Deep reasoning| S
     C -->|User input required| U[Developer decision]
-
     S --> D{Deep reasoning required?}
     D -->|No| I
-    D -->|Yes| P[Reasoning Task Packet]
-
-    P --> H[High-cost reasoning model<br/>Astra initially]
+    D -->|Yes| P[Standalone reasoning packet]
+    P --> H[Selected advanced reasoning model]
     H --> AP[Approved implementation plan]
     AP --> I
-
     I --> R
-    R --> F{Material findings?}
-    F -->|Focused fixes| I
-    F -->|No| G[Ready for Git]
-
+    R -->|Focused fixes| I
+    R -->|Pass| G[Ready for Git]
     U --> B
 ```
 
-The goal is not to use a weaker model for important decisions. The goal is to make sure expensive reasoning tokens are spent only where they add the most value.
+The canonical sequence is:
 
-## Need codes
+`Engineering Router -> Context Scout -> Implementer -> Reviewer`
 
-Agents use explicit need codes so routing decisions remain visible and auditable:
+The Router may send a clear routine request directly to Implementer or an existing change directly to Reviewer. A large task is not automatically a deep-reasoning task; large but mechanical work stays with Implementer.
 
-- `NEEDS_ROUTINE_IMPLEMENTATION` — the change is clear and mechanical.
-- `NEEDS_CONTEXT_DISCOVERY` — the relevant implementation or scope must first be discovered.
+## Need taxonomy
+
+- `NEEDS_ROUTINE_IMPLEMENTATION` — the requested change or approved plan is clear.
+- `NEEDS_CONTEXT_DISCOVERY` — the relevant implementation, behavior, dependencies, or scope must be discovered.
 - `NEEDS_DEEP_REASONING` — a material architecture, security, state, migration, cross-component, or difficult root-cause decision remains.
-- `NEEDS_VALIDATION_OR_REVIEW` — implementation exists and should be checked.
+- `NEEDS_VALIDATION_OR_REVIEW` — an implementation or diff exists and needs focused verification.
 - `NEEDS_USER_INPUT` — a required product, policy, environment, or business decision cannot be derived safely.
 
-A large task is not automatically a deep-reasoning task. Large but mechanical work should remain with the routine implementation path.
+## Roles
 
-## Handoffs
+### Engineering Router
 
-VS Code custom agents support handoffs between agents. This template uses them for the workflow stages that can remain inside Copilot, including:
+Classifies the request and selects the shortest capable path. It does not implement changes.
 
-- Router -> Context Scout,
-- Router -> Implementer,
-- Router -> Reviewer,
-- Context Scout -> Implementer when deep reasoning is unnecessary,
-- Implementer -> Reviewer,
-- Reviewer -> Implementer for focused fixes.
+### Context Scout
 
-The selected external high-cost reasoning model is intentionally not hard-coded. When Context Scout returns `NEEDS_DEEP_REASONING`, it also creates the compact standalone prompt that should be sent to Astra or another reasoning model.
+Performs read-only, progressive discovery. It produces either enough focused context for routine work or a compact standalone reasoning packet.
 
-## Design principles
+### Implementer
 
-- **Route before spending.** Classify the task before using an expensive model.
-- **Quality before cost.** Token savings are useful only if the engineering result remains strong.
-- **Reason first, implement second.** Expensive models should primarily resolve difficult decisions, not perform repository housekeeping.
-- **Progressive context discovery.** Read only the files needed for the current task instead of loading the repository broadly.
-- **Model agnostic.** The workflow must not depend on Astra-specific behavior.
-- **Delegate routine work.** Implementation, tests, documentation updates, formatting, commits, and pushes should normally go to lower-cost agents such as GitHub Copilot.
-- **Explicit scope.** Every reasoning request should state objective, relevant files, constraints, risks, unknowns, and definition of done.
-- **No blind context dumping.** Large logs, entire documentation trees, and unrelated source files should not be passed to a reasoning model by default.
-- **Evidence over assumptions.** Repository facts must be separated from inferred or missing information.
+Executes a clear request or approved plan with a small coherent diff and targeted validation. It does not redesign settled architecture.
+
+### Reviewer
+
+Checks the result for correctness, regressions, security, compatibility, required behavior, validation, and unnecessary scope without editing files.
+
+## Supported adapters
+
+| Consumer | Repository entry point | Native integration | Token Gourmand convention |
+| --- | --- | --- | --- |
+| GitHub Copilot | `.github/copilot-instructions.md` and `.github/agents/*.agent.md` | Repository instructions and custom-agent profiles; supported clients can expose configured tools and handoffs. | Agent bodies refer to the neutral core and role contracts. |
+| OpenAI Codex | `AGENTS.md` | Codex discovers repository `AGENTS.md` instructions. | Roles are explicit stages in the current session unless the host supplies its own orchestration. |
+| Claude Code | `CLAUDE.md` | Claude Code loads `CLAUDE.md` and its local `@path` imports. | Roles are explicit stages in the current session unless the host supplies its own orchestration. |
+| External reasoning model | Completed reasoning packet | No repository integration is assumed. | The user or host transfers only the standalone packet and returns the resulting plan to Implementer. |
+
+Native behavior varies by client. In particular, Copilot handoff metadata is a client capability and is not available in every Copilot environment. The shared Markdown contracts define consistent behavior but cannot enforce tool permissions or transitions in a host that does not support them.
+
+## How each adapter consumes Token Gourmand
+
+### GitHub Copilot
+
+Start with the **Engineering Router** custom agent when the path is not already clear. Its existing handoffs route to Context Scout, Implementer, or Reviewer. Each custom-agent profile keeps its Copilot-specific frontmatter and points to the matching shared contract under `.ai/roles/`.
+
+### OpenAI Codex
+
+Codex reads the root `AGENTS.md`, which directs it to the shared core and project context. Codex reads the applicable role contract before performing a stage and carries the stage output into the next role.
+
+### Claude Code
+
+Claude Code reads the root `CLAUDE.md`. That adapter imports the shared core and project context, then directs Claude to load only the role contract needed for the current stage.
+
+### External advanced reasoning models
+
+When Context Scout returns `NEEDS_DEEP_REASONING`, send the completed reasoning packet to an available advanced model such as Astra, GPT-5.6, or another suitable model. The packet includes verified facts, relevant excerpts, constraints, unknowns, the decision required, and definition of done. Return the accepted decision and plan to Implementer.
+
+Do not give an external model the whole repository by default, and do not ask it to spend time on routine editing, formatting, basic checks, or Git housekeeping.
+
+## Project context
+
+Keep `.ai/PROJECT_CONTEXT.md` short and current. Record only stable facts that save repeated discovery: purpose, major architecture, important paths, durable constraints, important decisions, current state, and known boundaries. Verify facts that are critical to a task against the current implementation.
+
+When using this repository as a template, replace the existing Token Gourmand-specific context with the target project's stable facts. Do not turn the file into a second README or a work log, and never store secrets in it.
 
 ## Repository structure
 
 ```text
+.ai/
+  CORE.md
+  PROJECT_CONTEXT.md
+  REASONING_PACKET.md
+  roles/
+    engineering-router.md
+    context-scout.md
+    implementer.md
+    reviewer.md
 .github/
   agents/
     engineering-router.agent.md
@@ -112,74 +140,26 @@ The selected external high-cost reasoning model is intentionally not hard-coded.
     implementer.agent.md
     reviewer.agent.md
   copilot-instructions.md
-.ai/
-  PROJECT_CONTEXT.md
-assets/
-  agentic-engineering-hero.svg
+AGENTS.md
+CLAUDE.md
 README.md
 ```
 
-## Agents
+## Getting started
 
-### Engineering Router
+1. Create a repository from this template.
+2. Replace `.ai/PROJECT_CONTEXT.md` with concise stable facts about the project.
+3. Use the native entry point for Copilot, Codex, or Claude Code.
+4. Start with Engineering Router unless the required role or an approved plan is already explicit.
+5. If Context Scout assigns `NEEDS_DEEP_REASONING`, send only its completed packet to the selected reasoning model.
+6. Return the approved plan to Implementer, then send the implementation to Reviewer.
 
-The default entry point. It performs lightweight triage and selects the smallest capable workflow based on the primary need.
+## Model access and tooling
 
-### Context Scout
+Token Gourmand is a set of repository instructions and workflow conventions. It does **not** install GitHub Copilot, OpenAI Codex, Claude Code, Astra, GPT-5.6, or any other model or client. It does **not** provide accounts, subscriptions, API keys, licenses, credentials, model access, or cross-provider orchestration. Users must obtain and configure the tools and models they choose to use.
 
-A read-only reconnaissance agent. It discovers the minimum repository context, decides whether expensive reasoning is justified, and produces a compact reasoning task packet only when necessary.
-
-### Implementer
-
-Executes a clear or approved plan, performs targeted validation, and handles routine Git housekeeping when explicitly requested. It should not redesign settled architecture.
-
-### Reviewer
-
-Checks an existing implementation or diff for correctness, regressions, security, required behavior, and unnecessary scope. It does not edit files and can hand focused findings back to Implementer.
-
-## Project context
-
-`.ai/PROJECT_CONTEXT.md` is deliberately short. A repository created from this template should keep it updated with stable information that would otherwise need to be rediscovered repeatedly, such as:
-
-- project purpose,
-- architecture summary,
-- important directories,
-- deployment model,
-- engineering constraints,
-- important decisions,
-- current project state.
-
-It is not intended to become a second README or a dump of the whole architecture. Its purpose is to save context tokens.
-
-## Suggested usage
-
-1. Create a new repository from this template.
-2. Fill in `.ai/PROJECT_CONTEXT.md` with the minimum stable project context.
-3. Start normal engineering requests with **Engineering Router**.
-4. Follow the recommended handoff.
-5. If Context Scout returns `NEEDS_DEEP_REASONING`, send only its generated reasoning prompt to the selected advanced model.
-6. Return the approved plan to **Implementer**.
-7. Hand the result to **Reviewer**.
-8. Use the high-cost model again only if a genuinely difficult unresolved decision remains.
-
-## Initial target stack
-
-None. This repository intentionally avoids coupling the workflow to AWS, Azure, Terraform, Python, JavaScript, or any other technology. Technology-specific instructions should live in repositories created from this template.
+The template has no runtime, cloud, language, framework, CLI, generator, or package dependency. Technology-specific instructions belong in repositories created from it.
 
 ## Status
 
-Early experimental template. The first real-world validation target is an Astra + GitHub Copilot workflow. The agent contracts, need taxonomy, routing, and context format are expected to evolve based on measured token savings and task quality.
-
-## What success looks like
-
-A successful use of Token Gourmand should reduce unnecessary context sent to expensive reasoning models while preserving or improving implementation quality. Over time, projects can measure:
-
-- reasoning-model token usage per task,
-- number of files passed to the reasoning model,
-- repeated repository discovery,
-- number of reasoning-model turns required,
-- percentage of tasks completed without expensive reasoning,
-- implementation rework after handoff,
-- quality outcomes relative to premium-model token consumption.
-
-The objective is simple: **reduce waste, not capability. Optimize for quality per token.**
+Token Gourmand is an early experimental template. Its stable architectural boundary is the shared `.ai/` core with lightweight host adapters. Future changes should be guided by measured context savings, reasoning cost, implementation rework, and engineering quality.

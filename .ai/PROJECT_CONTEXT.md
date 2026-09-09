@@ -1,89 +1,44 @@
 # Project Context
 
-Keep this file short. Its purpose is to prevent AI agents from repeatedly rediscovering stable project facts.
-
-Delete instructional placeholder text as the repository becomes established.
-
 ## Purpose
 
-Describe what this repository exists to deliver in 2-4 sentences.
+Token Gourmand is a reusable, model-neutral repository template for routing AI-assisted engineering work by need. It concentrates advanced reasoning on difficult decisions while keeping discovery, implementation, and review focused and context-efficient.
 
-## Architecture Summary
-
-List only the major components and their relationships.
-
-Example:
+## Architecture
 
 ```text
-Client -> API -> Application service -> Data store
-                 |
-                 -> External service
+Tool adapter -> shared .ai core and project context -> role contract
+                                                    |
+Context Scout -> standalone reasoning packet -> optional external reasoning model
 ```
+
+The canonical workflow is `Engineering Router -> Context Scout -> Implementer -> Reviewer`, with shorter routes allowed by the need taxonomy.
 
 ## Important Paths
 
-Document only paths that frequently matter to engineering tasks.
-
 | Path | Purpose |
 | --- | --- |
-| `src/` | Replace with project-specific purpose |
-| `tests/` | Replace with project-specific purpose |
-
-## Runtime / Platform
-
-- Primary language/runtime:
-- Infrastructure/platform:
-- Package/build system:
-- Infrastructure as Code:
-- CI/CD:
-- Primary deployment environment:
-
-Remove fields that do not apply.
-
-## Deployment Model
-
-Describe the minimum stable deployment facts that agents repeatedly need to know, such as:
-
-- deployment branches,
-- environments,
-- authentication mechanism,
-- region or platform boundaries,
-- promotion model.
-
-Do not store credentials, access tokens, secrets, or sensitive environment values here.
+| `.ai/` | Model-neutral workflow, role contracts, reasoning packet, and project context. |
+| `.github/agents/` | GitHub Copilot custom-agent profiles, tools, and native handoffs. |
+| `.github/copilot-instructions.md` | Repository adapter for GitHub Copilot. |
+| `AGENTS.md` | Repository adapter for OpenAI Codex. |
+| `CLAUDE.md` | Repository adapter for Claude Code. |
 
 ## Engineering Constraints
 
-List stable constraints that materially affect implementation.
-
-Examples:
-
-- avoid long-lived cloud credentials,
-- preserve backwards compatibility for a public interface,
-- infrastructure changes must remain declarative,
-- production changes require pull-request review.
-
-## Important Decisions
-
-Record only decisions that would otherwise be repeatedly reopened by AI agents.
-
-| Decision | Reason |
-| --- | --- |
-| Replace with a stable architectural decision | Brief rationale |
-
-For detailed Architecture Decision Records, link to them instead of duplicating them here.
-
-## Current State
-
-Summarize the current meaningful project state in a few bullets. Keep this current, not historical.
+- Repository content is technology-neutral Markdown with no runtime dependencies.
+- Shared workflow rules belong under `.ai/`; adapters stay lightweight and tool-specific.
+- Preserve the need codes and the existing Copilot custom-agent routing model.
+- External reasoning models receive compact standalone packets instead of broad repository context.
 
 ## Known Boundaries
 
-State areas that are intentionally outside the project's scope or should not be changed casually.
+- The template does not install models, grant model access, manage credentials, or select subscriptions.
+- It does not provide a CLI, generator, or cross-provider orchestration infrastructure.
+- Adapter capabilities depend on the host product; shared role transitions remain conventions where native handoffs are unavailable.
 
 ## AI Context Notes
 
-- Prefer targeted repository discovery over broad scans.
-- Treat this file as orientation, not proof. Verify task-critical facts against the current implementation.
-- Do not paste this entire file into another model when only a subset is relevant.
-- Update this file only when a stable fact changes.
+- Treat this file as orientation and verify task-critical facts against current files.
+- Update it only when a stable project fact changes.
+- Include only relevant excerpts when preparing external reasoning context.
