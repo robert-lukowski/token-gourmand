@@ -6,13 +6,20 @@
 
 **Premium reasoning. Lean execution.**
 
-Token Gourmand is a model-neutral AI engineering workflow for improving reasoning quality per token spent. It routes work by need, discovers repository context progressively, delegates routine execution, and gives advanced reasoning models compact standalone decision packets instead of broad repository dumps.
+Token Gourmand is a model-agnostic AI engineering workflow for improving engineering quality per premium reasoning token. It exists to keep expensive reasoning focused on architecture, difficult debugging, security-sensitive decisions, and other work where it materially improves the result, while routing discovery, implementation, and review to the smallest capable agent.
 
 > **Use premium reasoning where it creates premium value. Delegate everything else to the smallest capable agent.**
 
-Token Gourmand does not optimize for the cheapest model. It balances reasoning quality, correctness, context efficiency, implementation cost, and verification quality.
+It optimizes quality per premium reasoning token, not token count alone: reasoning quality, correctness, context efficiency, implementation cost, and verification quality all matter.
 
-## Model-neutral architecture
+## Supported ecosystems
+
+- **GitHub Copilot** — native custom agents and handoffs
+- **OpenAI Codex** — repository instructions through `AGENTS.md`
+- **Claude Code** — repository instructions through `CLAUDE.md`
+- **External reasoning models** — compact standalone reasoning packets
+
+## Model-agnostic architecture
 
 The workflow has one shared instruction layer and small adapters for tools that use different repository instruction formats:
 
@@ -111,7 +118,7 @@ Claude Code reads the root `CLAUDE.md`. That adapter imports the shared core and
 
 ### External advanced reasoning models
 
-When Context Scout returns `NEEDS_DEEP_REASONING`, send the completed reasoning packet to an available advanced model such as Astra, GPT-5.6, or another suitable model. The packet includes verified facts, relevant excerpts, constraints, unknowns, the decision required, and definition of done. Return the accepted decision and plan to Implementer.
+When Context Scout returns `NEEDS_DEEP_REASONING`, send the completed reasoning packet to the selected advanced reasoning model. The packet includes verified facts, relevant excerpts, constraints, unknowns, the decision required, and definition of done. Return the accepted decision and plan to Implementer.
 
 Do not give an external model the whole repository by default, and do not ask it to spend time on routine editing, formatting, basic checks, or Git housekeeping.
 
